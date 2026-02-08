@@ -22,7 +22,4 @@ public class LoginEntity {
 
     @Column(nullable = false)
     private String password;
-
-    @ElementCollection(fetch = FetchType.EAGER) // Loads roles immediately with the user
-    private Set<String> roles;
 }

@@ -17,10 +17,23 @@ public class LoginService {
 
     public ApiResponse<String> loginValidatorService(LoginRequestBody request) {
         boolean check = validateRequestBody(request);
-        if(!check) return new ApiResponse<> (false, "Request body is wrong","Request body is wrong");
+
+        if(!check) {
+            return new ApiResponse<>(false, "Request body is wrong", "Request body is wrong");
+        }
+
         Optional<LoginEntity> data=loginRepository.findByUsername(request.getUsername());
-        if(data==null) return new ApiResponse<> (false, "No Info","No user found for the entered username");
-        if(!data.equals(request)) return new ApiResponse<>(false,"Wrong details","Either UserName / password is wrong");
+
+        if(data==null) {
+            return new ApiResponse<> (false, "No Info","No user found for the entered username");
+        }
+
+        LoginEntity user = data.get();
+
+        if (!user.getPassword().equals(request.getPassword())) {
+            return new ApiResponse<>(false, "Auth Failed", "Invalid username or password");
+        }
+
         return new ApiResponse<>(true,"Valid user", "Successful");
     }
 
@@ -36,9 +49,9 @@ public class LoginService {
         }
 
         // 3. Minimum length check (Standard security practice)
-        if (request.getPassword().length() < 8) {
-            return false;
-        }
+//        if (request.getPassword().length() < 8) {
+//            return false;
+//        }
 
         return true;
     }
