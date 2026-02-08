@@ -31,4 +31,9 @@ public class LoginControllers {
         }
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logOutController(){
+        return ResponseEntity.ok(new ApiResponse<String>(true,"Successful","LogoutSuccessful"));
+    }
+
 }
