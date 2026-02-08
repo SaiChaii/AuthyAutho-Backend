@@ -4,6 +4,7 @@ import com.example.AuthyAutho.Model.DTO.ApiResponse;
 import com.example.AuthyAutho.Model.DTO.LoginRequestBody;
 import com.example.AuthyAutho.Model.Entity.LoginEntity;
 import com.example.AuthyAutho.Repository.LoginRepository;
+import com.example.AuthyAutho.config.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,8 @@ public class LoginService {
 
     @Autowired
     private LoginRepository loginRepository;
+    @Autowired
+    private JwtUtils jwtUtils;
 
     public ApiResponse<String> loginValidatorService(LoginRequestBody request) {
         boolean check = validateRequestBody(request);
@@ -34,7 +37,9 @@ public class LoginService {
             return new ApiResponse<>(false, "Auth Failed", "Invalid username or password");
         }
 
-        return new ApiResponse<>(true,"Valid user", "Successful");
+        String token = jwtUtils.generateToken(request.getUsername());
+        return new ApiResponse<>(true, "Login Successful", token);
+
     }
 
     private boolean validateRequestBody(LoginRequestBody request) {
