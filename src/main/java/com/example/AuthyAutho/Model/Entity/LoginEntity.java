@@ -1,5 +1,6 @@
 package com.example.AuthyAutho.Model.Entity;
 
+import com.example.AuthyAutho.Model.Enums.UserRoles;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Set;
@@ -22,4 +23,7 @@ public class LoginEntity {
 
     @Column(nullable = false)
     private String password;
+
+    @Column(nullable = false)
+    private UserRoles role;
 }

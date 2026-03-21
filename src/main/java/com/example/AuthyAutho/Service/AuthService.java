@@ -2,21 +2,27 @@ package com.example.AuthyAutho.Service;
 
 import com.example.AuthyAutho.Model.DTO.ApiResponse;
 import com.example.AuthyAutho.Model.DTO.LoginRequestBody;
+import com.example.AuthyAutho.Model.DTO.SignUpRequestBody;
 import com.example.AuthyAutho.Model.Entity.LoginEntity;
+import com.example.AuthyAutho.Model.Enums.UserRoles;
 import com.example.AuthyAutho.Repository.LoginRepository;
+import com.example.AuthyAutho.Service.Utils.SignUpDTOtoEntity;
 import com.example.AuthyAutho.config.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
-public class LoginService {
+public class AuthService {
 
     @Autowired
     private LoginRepository loginRepository;
     @Autowired
     private JwtUtils jwtUtils;
+    @Autowired
+    private SignUpDTOtoEntity signUpDTOtoEntity;
 
     public ApiResponse<String> loginValidatorService(LoginRequestBody request) {
         boolean check = validateRequestBody(request);
@@ -40,6 +46,26 @@ public class LoginService {
         String token = jwtUtils.generateToken(request.getUsername());
         return new ApiResponse<>(true, "Login Successful", token);
 
+    }
+
+    public ApiResponse<String> signUpValidatorService(SignUpRequestBody request){
+        if(!validateSignUpRequest(request)) return new ApiResponse<>(false,"Improper request body","Improper request body");
+        Optional<LoginEntity> User=loginRepository.findByUsername(request.getEmailId());
+        if(User.isPresent()){
+            return new ApiResponse<>(false,"User with these credentials is already present","User already present");
+        } else{
+            LoginEntity newUser= signUpDTOtoEntity.ConvertSignUpDTOtoLoginEntity(request);
+            loginRepository.save(newUser);
+            return new ApiResponse<>(true,"Saved","Saved");
+        }
+    }
+
+    private boolean validateSignUpRequest(SignUpRequestBody request) {
+        if(request==null || request.getEmailId()==null || request.getPassWord()==null || request.getRole()==null){
+            return false;
+        }
+        if(request.getRole()!= UserRoles.Admin || request.getRole()!=UserRoles.Supervisor || request.getRole()!=UserRoles.Employee) return false;
+        return true;
     }
 
     private boolean validateRequestBody(LoginRequestBody request) {
