@@ -50,7 +50,7 @@ public class AuthControllers {
         }
     }
 
-    @PostMapping("/logout")
+    @GetMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logOutController() {
         _logger.logInformation("Received logout request. Clearing client-side token.");
         return ResponseEntity.ok(new ApiResponse<String>(true, "Successful", "LogoutSuccessful"));
